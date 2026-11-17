@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>孩子放假谁来带 · 春假秋假的上午下午，怎么排最省</title>
+<meta name="description" content="孩子放春假秋假，爸妈照常上班。把爸妈、老人、托管班哪个半天有空、最多带几个半天、每半天花多少填进格子，算出最省的排法（现金 + 年假折价），哪个半天谁都排不上，谁多帮一个半天能省多少。">
+<style>
+  :root{--bg:#eef1ec;--paper:#fff;--card:#f6f8f4;--ink:#1f2a24;--ink2:#4a554e;--mut:#7d877f;--line:#d9dfd8;--rule:#e8ece6;--red:#a3392b;--ok:#245c40;--key:#7a4a10;--hi:#fff4dc;--on:#e3efe6;--got:#2f7a55}
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1040px;margin:0 auto;padding:22px 14px 72px}
+  h1{font-size:32px;line-height:1.2;margin:0 0 6px;letter-spacing:.04em}
+  .sub{color:var(--ink2);margin:0;font-size:15.5px}
+  .muted{color:var(--mut);font-size:13.5px}
+  .hide{display:none !important}
+  button,input,select{font:inherit}
+  button{cursor:pointer}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 4px}
+  .chip{background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:13.5px;color:var(--ink2)}
+  .chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+  .panel{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:16px 18px;margin:14px 0;min-width:0}
+  .h2{font-size:15px;font-weight:700;margin:0 0 10px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+  .err{background:#fbeceb;border:1px solid #e3b1aa;border-radius:6px;padding:10px 14px;color:var(--red);margin:10px 0}
+  .err ul{margin:4px 0 0;padding-left:20px}
+  .bad{border-color:var(--red) !important;background:#fbeceb !important}
+  .top{display:grid;grid-template-columns:2fr 1fr 1fr 1.3fr;gap:10px}
+  .top label{display:block;font-size:12.5px;color:var(--ink2);margin-bottom:3px}
+  .top input,.top select{width:100%;border:1px solid var(--line);border-radius:4px;background:#fff;padding:5px 8px;font-size:16px}
+  .top small{display:block;color:var(--mut);font-size:11.5px;line-height:1.3;margin-top:2px}
+  /* 排班格 */
+  .gwrap{overflow-x:auto;margin-top:12px;border:1px solid var(--rule);border-radius:6px}
+  table.grid{border-collapse:collapse;min-width:100%}
+  .grid th,.grid td{border-bottom:1px solid var(--rule);padding:0}
+  .grid th.who{position:sticky;left:0;background:#fff;z-index:1;text-align:left;padding:6px 8px;min-width:190px;max-width:220px;border-right:1px solid var(--line);vertical-align:top;font-weight:400}
+  .grid thead th.who{font-size:12.5px;color:var(--mut);vertical-align:bottom}
+  .grid th.dh{border-left:1px solid var(--line)}
+  .dbtn{display:block;width:100%;background:none;border:0;padding:4px 2px;font-size:13px;color:var(--ink2);font-weight:700;line-height:1.25;white-space:nowrap}
+  .dbtn small{display:block;font-weight:400;font-size:11px;color:var(--mut)}
+  th.off .dbtn{color:#a7ada8}
+  .grid td.c{min-width:44px;text-align:center;border-left:1px dotted var(--rule)}
+  .grid td.c:not(.pmc){border-left:1px solid var(--line)}
+  .grid td.c{height:1px}
+  .grid td.c button{width:100%;min-width:40px;height:100%;min-height:44px;border:0;background:transparent;font-size:14px;color:var(--ok)}
+  .grid td.c button.on{background:var(--on)}
+  .grid td.c button.got{background:var(--got);color:#fff;font-weight:700}
+  .grid td.off{background:repeating-linear-gradient(135deg,#f3f3f0 0 6px,#ebebe6 6px 12px)}
+  .grid td.off button,.grid td.off button.on{cursor:not-allowed;background:transparent;color:#b5bab6}
+  .nmrow{display:flex;gap:6px;align-items:center}
+  .grid input.nm{flex:1;min-width:0;border:1px solid var(--line);border-radius:4px;padding:2px 6px;font-weight:700;font-size:15px}
+  .pm{display:flex;flex-wrap:wrap;gap:4px 8px;margin-top:4px;font-size:12px;color:var(--ink2);align-items:center}
+  .pm label{white-space:nowrap}
+  .pm input:not([type]),.pm input[inputmode]{width:52px;border:1px solid var(--line);border-radius:3px;padding:1px 4px;margin:0 2px;font-size:13px}
+  .pm .ck input{vertical-align:-2px;margin-right:2px}
+  .del{border:1px solid var(--line);background:#fff;border-radius:3px;font-size:12px;padding:0 6px;color:var(--mut)}
+  tr.gaps th.who{font-size:12.5px;color:var(--red);font-weight:700}
+  .miss{color:var(--red);font-size:16px}
+  .legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12.5px;color:var(--mut);margin:8px 0 0}
+  .legend i{display:inline-block;width:14px;height:14px;border-radius:2px;vertical-align:-2px;margin-right:4px;border:1px solid #ccd}
+  .tot{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:2px 0 12px}
+  .tot div{border:1px solid var(--rule);background:var(--card);border-radius:6px;padding:7px 11px;min-width:0}
+  .tot span{display:block;font-size:12.5px;color:var(--mut)}
+  .tot b{font-size:28px;font-variant-numeric:tabular-nums;line-height:1.25;overflow-wrap:anywhere}
+  .tot div.key{background:var(--hi);border-color:#ecd29a} .tot div.key b{color:var(--key)}
+  .tot b.neg,.neg{color:var(--red)} .tot b.pos{color:var(--ok)}
+  .tot small{display:block;color:var(--mut);font-size:12px;line-height:1.35}
+  .head{font-size:20px;font-weight:800;line-height:1.45;margin:0 0 6px;overflow-wrap:anywhere}
+  .why{color:var(--ink2);margin:0 0 8px;font-size:15px;overflow-wrap:anywhere}
+  .acts{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 2px}
+  .act{background:#fff;border:1px solid #d9c49c;color:var(--key);border-radius:6px;padding:6px 10px;font-size:14px;text-align:left;max-width:100%;overflow-wrap:anywhere}
+  .act:hover{background:var(--hi)}
+  table.cmp{border-collapse:collapse;width:100%;font-size:14px;min-width:520px}
+  .cmp th,.cmp td{border-bottom:1px solid var(--rule);padding:6px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .cmp th:first-child,.cmp td:first-child{text-align:left;white-space:normal}
+  .cmp th{color:var(--mut);font-weight:600;font-size:12.5px}
+  .cmp tr.cur td{background:var(--hi);font-weight:700}
+  .tbl{overflow-x:auto}
+  .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .btn{background:var(--ink);color:#fff;border:0;border-radius:6px;padding:7px 13px;font-size:14px}
+  .btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  details{margin-top:8px} summary{cursor:pointer;color:var(--ink2);font-size:14.5px}
+  details li{font-size:14px;color:var(--ink2)}
+  @media (max-width:720px){
+    .top{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+    .tot{grid-template-columns:minmax(0,1fr)}
+    .tot b{font-size:24px}
+    .grid th.who{min-width:122px;max-width:126px;padding:5px 5px}
+    .pm input:not([type]),.pm input[inputmode]{width:40px}
+    .grid input.nm{font-size:14px}
+    .grid td.c button{min-width:34px}
+    .grid td.c{min-width:36px}
+    h1{font-size:28px}
+    .head{font-size:18px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>孩子放假谁来带</h1>
+  <p class="sub">孩子放春假、秋假，爸妈照常上班。把每个人哪个半天有空、最多带几个半天、每半天花多少填进格子，看最省的排法、哪个半天谁都排不上、谁多帮一个半天能省多少。</p>
+  <div class="chips" id="presets"></div>
+  <p class="muted" id="presetNote"></p>
+
+  <section class="panel" aria-label="设定">
+    <div class="h2">这次放假 <span class="muted" id="saveTag"></span></div>
+    <div class="top">
+      <div><label for="title">叫什么</label><input id="title" maxlength="24"></div>
+      <div><label for="days">放几天</label><input id="days" inputmode="numeric"><small>1–14 天</small></div>
+      <div><label for="start">第一天是</label><select id="start"><option value="0">不标星期</option><option value="1">周一</option><option value="2">周二</option><option value="3">周三</option><option value="4">周四</option><option value="5">周五</option><option value="6">周六</option><option value="7">周日</option></select></div>
+      <div><label for="leave">请一天年假折多少钱（元）</label><input id="leave" inputmode="decimal"><small>你自己定：日薪，或你觉得一天假值多少</small></div>
+    </div>
+    <div class="gwrap"><div id="grid"></div></div>
+    <div class="legend"><span><i style="background:var(--on)"></i>有空（点格子切换）</span><span><i style="background:var(--got)"></i>最省排法里由他带</span><span><i style="background:repeating-linear-gradient(135deg,#f3f3f0 0 3px,#ebebe6 3px 6px)"></i>这天不用安排（点表头切换）</span><span><b class="miss">✕</b> 谁都排不上</span></div>
+    <div class="bar" style="margin-top:10px"><button type="button" class="btn ghost" id="addP">＋ 再加一个人</button><span class="muted">最多 6 个人；托管班、钟点工也算一个「人」</span></div>
+  </section>
+
+  <div id="errBox" class="err hide"></div>
+
+  <section class="panel" id="okBox" aria-label="结论">
+    <div class="tot" id="tot"></div>
+    <p class="head" id="headline"></p>
+    <p class="why" id="why"></p>
+    <div class="acts" id="acts"></div>
+  </section>
+
+  <section class="panel" id="cmpPanel" aria-label="谁来不了">
+    <div class="h2">谁临时来不了，会怎样 <span class="muted">每一行都去掉这个人重排一次</span></div>
+    <div class="tbl"><table class="cmp" id="cmp"></table></div>
+  </section>
+
+  <section class="panel">
+    <div class="bar">
+      <button class="btn" id="dlPng" type="button">下载结果卡 PNG</button>
+      <button class="btn ghost" id="dlCsv" type="button">排班 CSV</button>
+      <button class="btn ghost" id="dlMd" type="button">Markdown</button>
+      <button class="btn ghost" id="dlJson" type="button">备份 JSON</button>
+      <button class="btn ghost" id="impJson" type="button">导入备份</button>
+      <input type="file" id="impFile" accept=".json,application/json" class="hide">
+      <button class="btn ghost" id="reset" type="button">回到默认</button>
+    </div>
+    <details>
+      <summary>怎么算的、算不了什么</summary>
+      <ul>
+        <li>一天分上午、下午两个半天，每个要安排的半天交给一个人。只排你勾了「有空」的格子，每人不超过「最多几个半天」。</li>
+        <li>先让排上的半天尽量多，再让合计最少：合计 = 现金 + 年假折价（勾了「要请假」的人，带一个半天折半天年假）。花费相同的排法有好几种时，优先排名单里靠前的人。</li>
+        <li>用最小费用最大流精确求解，结果是最优排法，不是试出来的近似。改法按钮都是真的改一格、重排一次后写出来的。</li>
+        <li>没算进去的：接送路上的时间、孩子愿不愿意、老人累不累、连着请假和零散请假的区别、托管班要不要提前报名或整周起报。这些请你自己在格子里体现（比如老人只勾得动的几格）。</li>
+        <li>年假一天折多少钱是你自己定的，不是工资计算标准。默认人物、时间和价格都是虚构示例。</li>
+      </ul>
+    </details>
+  </section>
+  <p class="muted">全部在你的浏览器里算，不联网；设定自动存在本机。</p>
+</div>
+<script src="./core.js"></script>
+<script src="./ui.js"></script>
+</body>
+</html>
